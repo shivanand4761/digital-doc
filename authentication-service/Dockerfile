@@ -1,5 +1,5 @@
 FROM openjdk:11-jre-slim
-WORKDIR usr/src
+WORKDIR /usr/src
 EXPOSE 8095
 ENV MYSQL_USERNAME=root
 ENV MYSQL_PASSWORD=Nikhil@369
