@@ -7,7 +7,6 @@ pipeline {
         APP_NAME = "api-gateway"
         VERSION_TAG = "${env.BUILD_NUMBER}"
         IMAGE_NAME = "shivanand1234/${APP_NAME}:v${VERSION_TAG}"
-        KUBECONFIG = "$HOME/.kube/config"
     }
 
     tools {
@@ -62,10 +61,8 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig-cred-id', variable: 'KUBECONFIG_FILE')]) {
                     dir('api-gateway') {
                         sh '''
-                            export KUBECONFIG=$KUBECONFIG_FILE
                             kubectl apply -f k8s/deployment.yaml
                             kubectl apply -f k8s/service.yaml
                         '''
