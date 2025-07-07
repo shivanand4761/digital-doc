@@ -1,31 +1,37 @@
 pipeline {
     agent any
+
     environment {
         BRANCH_NAME = "${env.BRANCH_NAME}"
-    	ENV = BRANCH_NAME.toLowerCase()
-   	    APP_NAME = "api-gateway" 
-    	IMAGE_NAME = "shivanand1234/${APP_NAME}:${ENV}"
-    	KUBECONFIG = "$HOME/.kube/config"  
+        ENV = "${BRANCH_NAME.toLowerCase()}"
+        APP_NAME = "api-gateway"
+        IMAGE_NAME = "shivanand1234/${APP_NAME}:${ENV}"
+        KUBECONFIG = "$HOME/.kube/config"
     }
+
     tools {
         maven 'Maven-3.8.1'
     }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
         }
+
         stage('Build with Maven') {
             steps {
-                    sh 'mvn clean install -DskipTests'
+                sh 'mvn clean install -DskipTests'
             }
         }
+
         stage('Docker Build') {
             steps {
-                    sh 'docker build -t $IMAGE_NAME .'
-                }
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
+
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
@@ -40,13 +46,14 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG_FILE')]) {
+                withCredentials([file(credentialsId: 'kubeconfig-cred-id', variable: 'KUBECONFIG_FILE')]) {
                     sh '''
                         export KUBECONFIG=$KUBECONFIG_FILE
-                        kubectl apply -f ${JOB_BASE_NAME}/k8s/deployment.yaml
-                        kubectl apply -f ${JOB_BASE_NAME}/k8s/service.yaml
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/service.yaml
                     '''
                 }
             }
@@ -55,10 +62,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ deployed successfully!"
+            echo "✅ Deployed $APP_NAME successfully to $ENV!"
         }
         failure {
-            echo "❌ deployment failed ."
+            echo "❌ Deployment of $APP_NAME to $ENV failed."
         }
     }
 }
