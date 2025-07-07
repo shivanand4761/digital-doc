@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         BRANCH_NAME = "${env.BRANCH_NAME}"
-        ENV = "${BRANCH_NAME.toLowerCase()}"
+        ENV = "${env.BRANCH_NAME.toLowerCase()}"
         APP_NAME = "api-gateway"
         VERSION_TAG = "${env.BUILD_NUMBER}"
         IMAGE_NAME = "shivanand1234/${APP_NAME}:v${VERSION_TAG}"
@@ -61,13 +61,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                    dir('api-gateway') {
-                        sh '''
-
-                            kubectl apply -f k8s/deployment.yaml
-                            kubectl apply -f k8s/service.yaml
-                        '''
-                    }
+                dir('api-gateway') {
+                    sh '''
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/service.yaml
+                    '''
                 }
             }
         }
