@@ -22,7 +22,13 @@ pipeline {
 
         stage('Build with Maven') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh '''
+                export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+                export PATH=$JAVA_HOME/bin:$PATH
+                java -version
+                mvn -version
+                mvn clean install -DskipTests
+            '''
             }
         }
 
