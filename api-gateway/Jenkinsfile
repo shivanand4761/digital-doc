@@ -5,21 +5,20 @@ pipeline {
         BRANCH_NAME = "${env.BRANCH_NAME}"
         ENV = "${BRANCH_NAME.toLowerCase()}"
         APP_NAME = "api-gateway"
-        IMAGE_NAME = "shivanand1234/${APP_NAME}:${ENV}"
+        VERSION_TAG = "${env.BUILD_NUMBER}"
+        IMAGE_NAME = "shivanand1234/${APP_NAME}:${ENV}-${VERSION_TAG}"
         KUBECONFIG = "$HOME/.kube/config"
     }
 
     tools {
         maven 'Maven-3.8.1'
     }
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-
         stage('Build with Maven') {
             steps {
                 sh '''
@@ -31,13 +30,11 @@ pipeline {
             '''
             }
         }
-
         stage('Docker Build') {
             steps {
                 sh 'docker build -t $IMAGE_NAME .'
             }
         }
-
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
