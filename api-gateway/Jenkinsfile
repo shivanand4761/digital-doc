@@ -63,6 +63,7 @@ pipeline {
             steps {
                 dir('api-gateway') {
                     sh '''
+                        sed -i "s|image:.*|image: ${IMAGE_NAME}|" K8s/deployment.yaml
                         kubectl apply -f K8s/deployment.yaml
                         kubectl apply -f K8s/service.yaml
                     '''
