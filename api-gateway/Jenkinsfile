@@ -63,8 +63,8 @@ pipeline {
             steps {
                 dir('api-gateway') {
                     sh '''
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
+                        kubectl apply -f K8s/deployment.yaml
+                        kubectl apply -f K8s/service.yaml
                     '''
                 }
             }
