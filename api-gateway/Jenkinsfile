@@ -13,28 +13,36 @@ pipeline {
     tools {
         maven 'Maven-3.8.1'
     }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+
         stage('Build with Maven') {
             steps {
-                sh '''
-                export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-                export PATH=$JAVA_HOME/bin:$PATH
-                java -version
-                mvn -version
-                mvn clean install -DskipTests
-            '''
+                dir('api-gateway') {
+                    sh '''
+                        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+                        export PATH=$JAVA_HOME/bin:$PATH
+                        java -version
+                        mvn -version
+                        mvn clean install -DskipTests
+                    '''
+                }
             }
         }
+
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                dir('api-gateway') {
+                    sh 'docker build -t $IMAGE_NAME .'
+                }
             }
         }
+
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(
@@ -42,10 +50,12 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push $IMAGE_NAME
-                    '''
+                    dir('api-gateway') {
+                        sh '''
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            docker push $IMAGE_NAME
+                        '''
+                    }
                 }
             }
         }
@@ -53,11 +63,13 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig-cred-id', variable: 'KUBECONFIG_FILE')]) {
-                    sh '''
-                        export KUBECONFIG=$KUBECONFIG_FILE
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
-                    '''
+                    dir('api-gateway') {
+                        sh '''
+                            export KUBECONFIG=$KUBECONFIG_FILE
+                            kubectl apply -f k8s/deployment.yaml
+                            kubectl apply -f k8s/service.yaml
+                        '''
+                    }
                 }
             }
         }
