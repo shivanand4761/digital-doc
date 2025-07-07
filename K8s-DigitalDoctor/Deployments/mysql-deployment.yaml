@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  templete:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:latest
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "Password"
+          - name: MYSQL_PASSWORD
+            value: "root"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "yes"
+        ports:
+        - containerPort: 3306
