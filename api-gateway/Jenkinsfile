@@ -6,7 +6,7 @@ pipeline {
         ENV = "${BRANCH_NAME.toLowerCase()}"
         APP_NAME = "api-gateway"
         VERSION_TAG = "${env.BUILD_NUMBER}"
-        IMAGE_NAME = "shivanand1234/${APP_NAME}:${ENV}-${VERSION_TAG}"
+        IMAGE_NAME = "shivanand1234/${APP_NAME}:v${VERSION_TAG}"
         KUBECONFIG = "$HOME/.kube/config"
     }
 
