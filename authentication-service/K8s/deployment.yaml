@@ -7,13 +7,20 @@ spec:
   selector:
     matchLabels:
       app: authentication-service
-  templete:
-    matadata:
+  template:
+    metadata:
       labels:
         app: authentication-service
     spec:
       containers:
-      - name: authentication-service
-        image: authentiocation-service:latest
-        ports:
-        - containerPort: 8095
+        - name: authentication-service
+          image: authentiocation-service:latest
+          ports:
+            - containerPort: 8095
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

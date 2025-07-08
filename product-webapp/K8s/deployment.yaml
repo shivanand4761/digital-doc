@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: product-webapp
-  templete:
+  template:
     metadata:
       labels:
         app: product-webapp
@@ -17,3 +17,10 @@ spec:
         image: product-webapp:latest
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

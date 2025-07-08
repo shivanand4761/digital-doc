@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: rabbitmq
-  templete:
+  template:
     metadata:
       labels:
         app: rabbitmq
@@ -23,3 +23,10 @@ spec:
         ports:
         - containerPort: 5672
         - containerPort: 15672
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

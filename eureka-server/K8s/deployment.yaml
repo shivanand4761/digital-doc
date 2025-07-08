@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: eureka-server
-  templete:
+  template:
     metadata:
       labels:
         app: eureka-server
@@ -17,3 +17,10 @@ spec:
         image: eureka-server:latest
         ports:
         - containerPort: 8761
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
