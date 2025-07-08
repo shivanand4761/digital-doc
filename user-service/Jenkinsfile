@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+
+    environment {
+        BRANCH_NAME = "${env.BRANCH_NAME}"
+        ENV = "${env.BRANCH_NAME.toLowerCase()}"
+        APP_NAME = "user-service"
+        VERSION_TAG = "${env.BUILD_NUMBER}"
+        IMAGE_NAME = "shivanand1234/${APP_NAME}:v${VERSION_TAG}"
+    }
+
+    tools {
+        maven 'Maven-3.8.1'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                dir('user-service') {
+                    sh '''
+                        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+                        export PATH=$JAVA_HOME/bin:$PATH
+                        java -version
+                        mvn -version
+                        mvn clean install -DskipTests
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir('user-service') {
+                    sh 'docker build -t $IMAGE_NAME .'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    dir('user-service') {
+                        sh '''
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            docker push $IMAGE_NAME
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                dir('user-service') {
+                    sh '''
+                        sed -i "s|image:.*|image: ${IMAGE_NAME}|" K8s/deployment.yaml
+                        kubectl apply -f K8s/deployment.yaml
+                        kubectl apply -f K8s/service.yaml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployed $APP_NAME successfully to $ENV!"
+        }
+        failure {
+            echo "❌ Deployment of $APP_NAME to $ENV failed."
+        }
+    }
+}

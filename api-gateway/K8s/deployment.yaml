@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: 
+          image: api-gateway:latest
           ports:
             - containerPort: 8080
