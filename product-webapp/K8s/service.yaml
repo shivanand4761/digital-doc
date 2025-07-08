@@ -2,12 +2,15 @@ apiVersion: v1
 kind: service
 metadata:
   name: product-webapp
+  namespace: digiDoc-dev
+  labels:
+    app: product-webapp
 spec:
   selector:
     app: product-webapp
   ports:
-  - protocol: TCP
-    port: 3000
-    targetPort: 3000
-    nordPort: 30002
-  type: NordPort
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30002
+  type: NodePort

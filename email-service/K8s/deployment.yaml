@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: email-service
+  namespace: digiDoc-dev
+  labels:
+    app: email-service
 spec:
   replicas: 1
   selector:
