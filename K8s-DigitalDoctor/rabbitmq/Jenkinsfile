@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        BRANCH_NAME = "${env.BRANCH_NAME}"
+        ENV = "${env.BRANCH_NAME.toLowerCase()}"
+        APP_NAME = "rabbitmq"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }   
+        stage('Deploy to Kubernetes') {
+            steps {
+                dir('K8s-DigitalDoctor/rabbitmq') {
+                    sh '''
+                        kubectl apply -f K8s-DigitalDoctor/rabbitmq/rabbitmq-deployment.yaml
+                        kubectl apply -f K8s-DigitalDoctor/rabbitmq/rabbitmq-svc.yaml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployed $APP_NAME successfully to $ENV!"
+        }
+        failure {
+            echo "❌ Deployment of $APP_NAME to $ENV failed."
+        }
+    }
+}
