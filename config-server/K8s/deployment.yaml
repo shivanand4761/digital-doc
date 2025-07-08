@@ -2,18 +2,28 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: config-server
+  namespace: digiDoc-dev
+  labels:
+    app: config-server
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: config-server
-  templete:
+  template:
     metadata:
       labels:
         name: config-server
     spec:
       containers:
-      - name: config-server
-        image: config-server:latest
-        ports:
-        - containerPort: 8888
+        - name: config-server
+          image: config-server:latest
+          ports:
+            - containerPort: 8888
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

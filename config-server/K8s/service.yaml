@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: config-server
+  namespace: digiDoc-dev
+  labels:
+    app: config-server
 spec:
   selector:
     app: config-server

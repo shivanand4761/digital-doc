@@ -2,12 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rabbitmq
+  namespace: digiDoc-dev
+  labels:
+    app: rabbitmq
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: rabbitmq
-  templete:
+  template:
     metadata:
       labels:
         app: rabbitmq
@@ -23,3 +26,10 @@ spec:
         ports:
         - containerPort: 5672
         - containerPort: 15672
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
