@@ -26,7 +26,7 @@ pipeline {
 
     post {
         success {
-            echo "✅ Deployed $APP_NAME successfully to $ENV!"
+            echo "✅ Deployed $APP_NAME successfully!"
         }
         failure {
             echo "❌ Deployment of $APP_NAME to $ENV failed."
